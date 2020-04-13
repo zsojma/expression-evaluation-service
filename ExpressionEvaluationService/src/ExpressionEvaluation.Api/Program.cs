@@ -3,6 +3,8 @@ using Microsoft.Extensions.Hosting;
 
 namespace ExpressionEvaluation.Api
 {
+#pragma warning disable CS1591
+
     public class Program
     {
         public static void Main(string[] args)
@@ -17,4 +19,6 @@ namespace ExpressionEvaluation.Api
                     webBuilder.UseStartup<Startup>();
                 });
     }
+
+#pragma warning restore CS1591
 }

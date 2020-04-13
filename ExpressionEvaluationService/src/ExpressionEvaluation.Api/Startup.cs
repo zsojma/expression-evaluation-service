@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using ExpressionEvaluation.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -10,6 +11,8 @@ using Microsoft.OpenApi.Models;
 
 namespace ExpressionEvaluation.Api
 {
+#pragma warning disable CS1591
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -45,6 +48,8 @@ namespace ExpressionEvaluation.Api
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 x.IncludeXmlComments(xmlPath);
             });
+
+            services.RegisterCoreServices();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -74,4 +79,6 @@ namespace ExpressionEvaluation.Api
             });
         }
     }
+    
+#pragma warning restore CS1591
 }
