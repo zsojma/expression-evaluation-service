@@ -3,7 +3,6 @@
     public enum ExpressionNodeType
     {
         Constant,
-        Plus,
         Minus,
         Percentage,
         Add,
