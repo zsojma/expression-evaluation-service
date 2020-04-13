@@ -1,4 +1,3 @@
-using ExpressionEvaluation.Core.Expression;
 using ExpressionEvaluation.Core.Parsing;
 using Xunit;
 
@@ -12,8 +11,7 @@ namespace ExpressionEvaluation.Tests
         public void AstParser_Parse_ReturnsCorrectResult(string input)
         {
             // Arrange
-            var nodeFactory = new ExpressionNodeFactory();
-            var parser = new AstParser(nodeFactory);
+            var parser = new AstParser();
 
             // Act
             var result = parser.Parse(input);
@@ -23,14 +21,13 @@ namespace ExpressionEvaluation.Tests
         }
 
         [Theory]
-        [InlineData("a", 'a')]
-        [InlineData("(1 + a)", 'a')]
-        [InlineData("(1 + a) * 22 - xy + 33", 'a', 'x', 'y')]
-        public void Parse_InvalidCharacter_ThrowException(string input, params char[] expectedInvalidCharacters)
+        [InlineData("a", "a")]
+        [InlineData("(1 + a)", "a")]
+        [InlineData("(1 + a) * 22 - xy + 33", "a", "xy")]
+        public void Parse_InvalidCharacter_ThrowException(string input, params string[] expectedInvalidCharacters)
         {
             // Arrange
-            var nodeFactory = new ExpressionNodeFactory();
-            var parser = new AstParser(nodeFactory);
+            var parser = new AstParser();
 
             // Act
             var exception = Record.Exception(() => parser.Parse(input));
@@ -46,15 +43,47 @@ namespace ExpressionEvaluation.Tests
             }
         }
 
-        [Fact]
-        public void SplitToBlocks_InvalidBlock_ThrowsException()
+        [Theory]
+        [InlineData("2")]
+        [InlineData("1 * (2 - 3)")]
+        [InlineData("(1 * (2 - 3))")]
+        [InlineData("((1 + 2) * 43) / 3.14 + 2 ^ 3")]
+        public void Parse_CorrectInputWithoutPercentage_ReturnsCorrectData(string input)
         {
             // Arrange
-            var nodeFactory = new ExpressionNodeFactory();
-            var parser = new AstParser(nodeFactory);
+            var parser = new AstParser();
 
             // Act
-            var exception = Record.Exception(() => parser.Parse("((1)"));
+            var parsed = parser.Parse(input);
+
+            // Assert
+            Assert.Equal(input.Replace(" ", ""), parsed.ToString());
+        }
+
+        [Theory]
+        [InlineData("2%", "0.02")]
+        [InlineData("(1 * (2% - 3))", "(1 * (0.02 - 3))")]
+        public void Parse_CorrectInputWithPercentage_ReturnsCorrectData(string input, string expectedResult)
+        {
+            // Arrange
+            var parser = new AstParser();
+
+            // Act
+            var parsed = parser.Parse(input);
+
+            // Assert
+            Assert.Equal(expectedResult.Replace(" ", ""), parsed.ToString());
+        }
+
+        [Theory]
+        [InlineData("(1 * (2 - 3)%)")]
+        public void Parse_InvalidInputWithPercentage_ThrowsException(string input)
+        {
+            // Arrange
+            var parser = new AstParser();
+
+            // Act
+            var exception = Record.Exception(() => parser.Parse(input));
 
             // Assert
             Assert.NotNull(exception);

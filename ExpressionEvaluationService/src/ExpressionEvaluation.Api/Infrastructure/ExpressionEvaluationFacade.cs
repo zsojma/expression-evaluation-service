@@ -20,7 +20,7 @@ namespace ExpressionEvaluation.Api.Infrastructure
             try
             {
                 var ast = _astParser.Parse(expr);
-                var result = _evaluator.Evaluate(ast);
+                var result = _evaluator.Evaluate(null);
                 return result;
             }
             catch (CoreException ex)

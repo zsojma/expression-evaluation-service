@@ -1,7 +1,7 @@
 ﻿using ExpressionEvaluation.Api.Infrastructure;
 using ExpressionEvaluation.Core.Evaluation;
-using ExpressionEvaluation.Core.Expression.Abstract;
 using ExpressionEvaluation.Core.Parsing;
+using ExpressionEvaluation.Core.Parsing.Grammar;
 using Moq;
 using Xunit;
 
@@ -33,7 +33,7 @@ namespace ExpressionEvaluation.Api.Tests
             // Arrange
             var astParserMock = new Mock<IAstParser>();
             var evaluationMock = new Mock<IExpressionEvaluator>();
-            evaluationMock.Setup(m => m.Evaluate(It.IsAny<ExpressionNode>())).Throws(new ExpressionEvaluatorException("test"));
+            evaluationMock.Setup(m => m.Evaluate(It.IsAny<BinaryNode>())).Throws(new ExpressionEvaluatorException("test"));
 
             var facade = new ExpressionEvaluationFacade(astParserMock.Object, evaluationMock.Object);
 

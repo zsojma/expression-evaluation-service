@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 using ExpressionEvaluation.Core.Evaluation;
-using ExpressionEvaluation.Core.Expression;
 using ExpressionEvaluation.Core.Parsing;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,8 +18,6 @@ namespace ExpressionEvaluation.Core
         /// <returns>Services collection</returns>
         public static IServiceCollection RegisterCoreServices(this IServiceCollection services)
         {
-            services.AddTransient<ExpressionNodeFactory>();
-
             services.AddTransient<IAstParser, AstParser>();
             services.AddTransient<IExpressionEvaluator, ExpressionEvaluator>();
 
