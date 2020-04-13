@@ -1,4 +1,4 @@
-﻿using ExpressionEvaluation.Core.Parsing.Grammar;
+﻿using ExpressionEvaluation.Core.ExpressionNodes;
 
 namespace ExpressionEvaluation.Core.Parsing
 {

@@ -1,7 +1,6 @@
 ﻿using System.Linq;
-using System.Runtime.Serialization.Formatters;
 using System.Text.RegularExpressions;
-using ExpressionEvaluation.Core.Parsing.Grammar;
+using ExpressionEvaluation.Core.ExpressionNodes;
 
 namespace ExpressionEvaluation.Core.Parsing
 {
@@ -12,35 +11,32 @@ namespace ExpressionEvaluation.Core.Parsing
             input = SanitizeInput(input);
             ValidateInput(input);
 
-            if (TryGetE(input, out var e))
-            {
-                return e;
-            }
-
-            return null;
+            return TryGetBinaryNode(input, out var root)
+                ? root
+                : throw new AstParserException("Unable to parse input: " + input);
         }
 
-        private bool TryGetE(string input, out BinaryNode e)
+        private bool TryGetBinaryNode(string input, out BinaryNode output)
         {
             var innerInput = input;
 
-            if (TryGetP(ref innerInput, out var p))
+            if (TryGetUnaryNode(ref innerInput, out var left))
             {
-                e = new BinaryNode(p);
+                output = new BinaryNode(left);
 
                 while (true)
                 {
-                    if (!TryGetBinaryOperator(ref innerInput, out var b))
+                    if (!TryGetBinaryOperatorType(ref innerInput, out var op))
                     {
                         break;
                     }
 
-                    if (!TryGetP(ref innerInput, out var nextP))
+                    if (!TryGetUnaryNode(ref innerInput, out var right))
                     {
                         break;
                     }
 
-                    e.BP.Add((b, nextP));
+                    output.Rights.Add((op, right));
                 }
 
                 // there have to be nothing left to parse
@@ -52,40 +48,40 @@ namespace ExpressionEvaluation.Core.Parsing
                 return true;
             }
 
-            e = null;
+            output = null;
             return false;
         }
 
-        private bool TryGetP(ref string input, out UnaryNode p)
+        private bool TryGetUnaryNode(ref string input, out UnaryNode output)
         {
             var innerInput = input;
 
-            if (TryGetPExpression(ref innerInput, out var pExpr))
+            if (TryGetUnaryExpressionNode(ref innerInput, out var expressionNode))
             {
                 input = innerInput;
-                p = pExpr;
+                output = expressionNode;
                 return true;
             }
 
-            if (TryGetPNegative(ref innerInput, out var pNegative))
+            if (TryGetUnaryPrefixNode(ref innerInput, out var prefixNode))
             {
                 input = innerInput;
-                p = pNegative;
+                output = prefixNode;
                 return true;
             }
 
-            if (TryGetPValue(ref innerInput, out var pValue))
+            if (TryGetUnaryValueNode(ref innerInput, out var valueNode))
             {
                 input = innerInput;
-                p = pValue;
+                output = valueNode;
                 return true;
             }
 
-            p = null;
+            output = null;
             return false;
         }
 
-        private bool TryGetPExpression(ref string input, out UnaryExpressionNode p)
+        private bool TryGetUnaryExpressionNode(ref string input, out UnaryExpressionNode output)
         {
             if (input.StartsWith("("))
             {
@@ -106,9 +102,9 @@ namespace ExpressionEvaluation.Core.Parsing
                         {
                             // block found
                             var innerInput = input.Substring(1, rightParenthesisIndex - 1);
-                            if (TryGetE(innerInput, out var e))
+                            if (TryGetBinaryNode(innerInput, out var expression))
                             {
-                                p = new UnaryExpressionNode(e);
+                                output = new UnaryExpressionNode(expression);
                                 input = input.Substring(rightParenthesisIndex + 1);
                                 return true;
                             }
@@ -126,28 +122,32 @@ namespace ExpressionEvaluation.Core.Parsing
                 }
             }
 
-            p = null;
+            output = null;
             return false;
         }
 
-        private bool TryGetPNegative(ref string input, out UnaryNegativeNode p)
+        private bool TryGetUnaryPrefixNode(ref string input, out UnaryPrefixNode output)
         {
-            if (input.FirstOrDefault() == '-')
+            if (input.Length > 0)
             {
-                var innerInput = input.Substring(1);
-                if (TryGetP(ref innerInput, out var innerP))
+                var op = UnaryOperator.CharToOperator(input[0]);
+                if (op != UnaryOperatorType.Unknown)
                 {
-                    input = innerInput;
-                    p = new UnaryNegativeNode(innerP);
-                    return true;
+                    var innerInput = input.Substring(1);
+                    if (TryGetUnaryNode(ref innerInput, out var innerUnaryNode))
+                    {
+                        input = innerInput;
+                        output = new UnaryPrefixNode(op, innerUnaryNode);
+                        return true;
+                    }
                 }
             }
 
-            p = null;
+            output = null;
             return false;
         }
 
-        private bool TryGetPValue(ref string input, out UnaryValueNode p)
+        private bool TryGetUnaryValueNode(ref string input, out UnaryValueNode output)
         {
             var match = Regex.Match(input, @"^([0-9\.]+)(%?)(.*)");
             if (match.Success && decimal.TryParse(match.Groups[1].Value, out var inputValue))
@@ -157,28 +157,28 @@ namespace ExpressionEvaluation.Core.Parsing
                     ? inputValue / 100
                     : inputValue;
                 
-                p = new UnaryValueNode(decimalValue);
+                output = new UnaryValueNode(decimalValue);
                 input = match.Groups[3].Value;
                 return true;
             }
 
-            p = null;
+            output = null;
             return false;
         }
 
-        private bool TryGetBinaryOperator(ref string input, out BinaryOperatorType b)
+        private bool TryGetBinaryOperatorType(ref string input, out BinaryOperatorType output)
         {
             if (input.Length > 0)
             {
-                b = BinaryOperator.CharToOperator(input[0]);
-                if (b != BinaryOperatorType.Unknown)
+                output = BinaryOperator.CharToOperator(input[0]);
+                if (output != BinaryOperatorType.Unknown)
                 {
                     input = input.Substring(1);
                     return true;
                 }
             }
 
-            b = BinaryOperatorType.Unknown;
+            output = BinaryOperatorType.Unknown;
             return false;
         }
 

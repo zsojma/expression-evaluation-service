@@ -1,4 +1,4 @@
-﻿namespace ExpressionEvaluation.Core.Parsing.Grammar
+﻿namespace ExpressionEvaluation.Core.ExpressionNodes
 {
     public enum BinaryOperatorType
     {

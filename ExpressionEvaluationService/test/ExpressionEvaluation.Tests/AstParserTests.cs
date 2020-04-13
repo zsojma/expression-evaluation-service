@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using ExpressionEvaluation.Core.Parsing;
 using Xunit;
 
@@ -6,18 +7,41 @@ namespace ExpressionEvaluation.Tests
     public class AstParserTests
     {
         [Theory]
-        [InlineData("(1)")]
-        [InlineData("(1 + 1)")]
-        public void AstParser_Parse_ReturnsCorrectResult(string input)
+        [InlineData("2")]
+        [InlineData("-2")]
+        [InlineData("+2")]
+        [InlineData("--2")]
+        [InlineData("22.2")]
+        [InlineData("1 * (2 - 3)")]
+        [InlineData("1 * (2 - -3)")]
+        [InlineData("(1 * (2 - 3))")]
+        [InlineData("((1 + 2) * 43) / 3.14 + 2 ^ 3")]
+        [InlineData("-22 * +(-22.23 * -(44.2 + +33.2))")]
+        public void Parse_CorrectInputWithoutPercentage_ReturnsCorrectData(string input)
         {
             // Arrange
             var parser = new AstParser();
 
             // Act
-            var result = parser.Parse(input);
+            var parsed = parser.Parse(input);
 
             // Assert
-            Assert.NotNull(result);
+            Assert.Equal(RemoveSpaces(input), parsed.ToString());
+        }
+
+        [Theory]
+        [InlineData("2%", "0.02")]
+        [InlineData("(1 * (2% - 3))", "(1 * (0.02 - 3))")]
+        public void Parse_CorrectInputWithPercentage_ReturnsCorrectData(string input, string expectedResult)
+        {
+            // Arrange
+            var parser = new AstParser();
+
+            // Act
+            var parsed = parser.Parse(input);
+
+            // Assert
+            Assert.Equal(RemoveSpaces(expectedResult), parsed.ToString());
         }
 
         [Theory]
@@ -44,38 +68,6 @@ namespace ExpressionEvaluation.Tests
         }
 
         [Theory]
-        [InlineData("2")]
-        [InlineData("1 * (2 - 3)")]
-        [InlineData("(1 * (2 - 3))")]
-        [InlineData("((1 + 2) * 43) / 3.14 + 2 ^ 3")]
-        public void Parse_CorrectInputWithoutPercentage_ReturnsCorrectData(string input)
-        {
-            // Arrange
-            var parser = new AstParser();
-
-            // Act
-            var parsed = parser.Parse(input);
-
-            // Assert
-            Assert.Equal(input.Replace(" ", ""), parsed.ToString());
-        }
-
-        [Theory]
-        [InlineData("2%", "0.02")]
-        [InlineData("(1 * (2% - 3))", "(1 * (0.02 - 3))")]
-        public void Parse_CorrectInputWithPercentage_ReturnsCorrectData(string input, string expectedResult)
-        {
-            // Arrange
-            var parser = new AstParser();
-
-            // Act
-            var parsed = parser.Parse(input);
-
-            // Assert
-            Assert.Equal(expectedResult.Replace(" ", ""), parsed.ToString());
-        }
-
-        [Theory]
         [InlineData("(1 * (2 - 3)%)")]
         public void Parse_InvalidInputWithPercentage_ThrowsException(string input)
         {
@@ -88,6 +80,11 @@ namespace ExpressionEvaluation.Tests
             // Assert
             Assert.NotNull(exception);
             Assert.IsType<AstParserException>(exception);
+        }
+
+        private string RemoveSpaces(string input)
+        {
+            return Regex.Replace(input, @"\s+", "");
         }
     }
 }

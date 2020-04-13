@@ -1,4 +1,4 @@
-﻿namespace ExpressionEvaluation.Core.Parsing.Grammar
+﻿namespace ExpressionEvaluation.Core.ExpressionNodes
 {
     public abstract class UnaryNode
     {
@@ -21,31 +21,33 @@
 
     internal class UnaryExpressionNode : UnaryNode
     {
-        public UnaryExpressionNode(BinaryNode e)
+        public UnaryExpressionNode(BinaryNode expression)
         {
-            E = e;
+            Expression = expression;
         }
 
-        public BinaryNode E { get; }
+        public BinaryNode Expression { get; }
 
         public override string ToString()
         {
-            return $"({E})";
+            return $"({Expression})";
         }
     }
 
-    internal class UnaryNegativeNode : UnaryNode
+    internal class UnaryPrefixNode : UnaryNode
     {
-        public UnaryNegativeNode(UnaryNode p)
+        public UnaryPrefixNode(UnaryOperatorType op, UnaryNode value)
         {
-            P = p;
+            Operator = op;
+            Value = value;
         }
 
-        public UnaryNode P { get; }
+        public UnaryOperatorType Operator { get; }
+        public UnaryNode Value { get; }
 
         public override string ToString()
         {
-            return $"-{P}";
+            return $"{Operator.ToDisplayString()}{Value}";
         }
     }
 }

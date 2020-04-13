@@ -1,7 +1,7 @@
 ﻿using ExpressionEvaluation.Api.Infrastructure;
 using ExpressionEvaluation.Core.Evaluation;
+using ExpressionEvaluation.Core.ExpressionNodes;
 using ExpressionEvaluation.Core.Parsing;
-using ExpressionEvaluation.Core.Parsing.Grammar;
 using Moq;
 using Xunit;
 
