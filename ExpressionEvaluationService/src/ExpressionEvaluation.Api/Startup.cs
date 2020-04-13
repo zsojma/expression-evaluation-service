@@ -50,6 +50,7 @@ namespace ExpressionEvaluation.Api
             });
 
             services.RegisterCoreServices();
+            services.RegisterApiServices();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\ExpressionEvaluation.Api\ExpressionEvaluation.Api.csproj" />
     <ProjectReference Include="..\..\src\ExpressionEvaluation.Core\ExpressionEvaluation.Core.csproj" />
   </ItemGroup>
 

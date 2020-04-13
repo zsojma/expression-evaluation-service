@@ -1,5 +1,5 @@
 ﻿using System;
-using ExpressionEvaluation.Core.Infrastructure;
+using ExpressionEvaluation.Api.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -13,17 +13,17 @@ namespace ExpressionEvaluation.Api.Controllers
     [Route("")]
     public class ExpressionEvaluationController : ControllerBase
     {
-        private readonly IEvaluator _evaluator;
+        private readonly ExpressionEvaluationFacade _evaluationFacade;
         private readonly ILogger<ExpressionEvaluationController> _logger;
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="evaluator">Expression evaluation functionality</param>
+        /// <param name="evaluationFacade">Expression evaluation facade</param>
         /// <param name="logger">Logger</param>
-        public ExpressionEvaluationController(IEvaluator evaluator, ILogger<ExpressionEvaluationController> logger)
+        public ExpressionEvaluationController(ExpressionEvaluationFacade evaluationFacade, ILogger<ExpressionEvaluationController> logger)
         {
-            _evaluator = evaluator;
+            _evaluationFacade = evaluationFacade;
             _logger = logger;
         }
 
@@ -41,9 +41,9 @@ namespace ExpressionEvaluation.Api.Controllers
         {
             try
             {
-                return Ok(_evaluator.Compute(expr));
+                return Ok(_evaluationFacade.Compute(expr));
             }
-            catch (EvaluatorException ex)
+            catch (ExpressionEvaluationFacadeException ex)
             {
                 return StatusCode(StatusCodes.Status400BadRequest, ex.Message);
             }

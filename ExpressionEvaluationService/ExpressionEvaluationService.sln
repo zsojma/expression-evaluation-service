@@ -7,11 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExpressionEvaluation.Api", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6AA75C6F-DF78-4EEE-80AE-2DC82EAD5552}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionEvaluation.Core", "src\ExpressionEvaluation.Core\ExpressionEvaluation.Core.csproj", "{05DFCDA6-8A1B-457D-B363-2E717532475E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExpressionEvaluation.Core", "src\ExpressionEvaluation.Core\ExpressionEvaluation.Core.csproj", "{05DFCDA6-8A1B-457D-B363-2E717532475E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E054143F-BE6B-44D8-972F-83A1F433A6E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionEvaluation.Tests", "test\ExpressionEvaluation.Tests\ExpressionEvaluation.Tests.csproj", "{758CC517-C990-4A0D-917E-6B265BE830DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExpressionEvaluation.Tests", "test\ExpressionEvaluation.Tests\ExpressionEvaluation.Tests.csproj", "{758CC517-C990-4A0D-917E-6B265BE830DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionEvaluation.Api.Tests", "test\ExpressionEvaluation.Api.Tests\ExpressionEvaluation.Api.Tests.csproj", "{9CE91F7E-5B79-480B-BF5C-258A6F0959AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +33,10 @@ Global
 		{758CC517-C990-4A0D-917E-6B265BE830DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{758CC517-C990-4A0D-917E-6B265BE830DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{758CC517-C990-4A0D-917E-6B265BE830DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CE91F7E-5B79-480B-BF5C-258A6F0959AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CE91F7E-5B79-480B-BF5C-258A6F0959AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CE91F7E-5B79-480B-BF5C-258A6F0959AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CE91F7E-5B79-480B-BF5C-258A6F0959AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +45,7 @@ Global
 		{5279B22D-E75B-4F40-BDD2-C74270D6FD08} = {6AA75C6F-DF78-4EEE-80AE-2DC82EAD5552}
 		{05DFCDA6-8A1B-457D-B363-2E717532475E} = {6AA75C6F-DF78-4EEE-80AE-2DC82EAD5552}
 		{758CC517-C990-4A0D-917E-6B265BE830DF} = {E054143F-BE6B-44D8-972F-83A1F433A6E7}
+		{9CE91F7E-5B79-480B-BF5C-258A6F0959AF} = {E054143F-BE6B-44D8-972F-83A1F433A6E7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4D52A9C3-A1E7-4BDC-98CD-DC33F3C0D6C6}
