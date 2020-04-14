@@ -3,6 +3,7 @@
     public enum BinaryOperatorType
     {
         Unknown,
+        Result,
         Add,
         Subtract,
         Multiply,
@@ -16,6 +17,7 @@
         {
             return op switch
             {
+                BinaryOperatorType.Result => "=",
                 BinaryOperatorType.Add => "+",
                 BinaryOperatorType.Subtract => "-",
                 BinaryOperatorType.Multiply => "*",

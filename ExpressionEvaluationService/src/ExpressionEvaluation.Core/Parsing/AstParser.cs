@@ -6,27 +6,40 @@ namespace ExpressionEvaluation.Core.Parsing
 {
     internal class AstParser : IAstParser
     {
+        /// <summary>
+        /// Parses given input string to AST.
+        /// Uses Recursive-descent recognition. See: http://www.engr.mun.ca/~theo/Misc/exp_parsing.htm
+        /// </summary>
+        /// <param name="input">Input string</param>
+        /// <returns>Root of AST</returns>
         public BinaryNode Parse(string input)
         {
             input = SanitizeInput(input);
             ValidateInput(input);
 
-            return TryGetBinaryNode(input, out var root)
+            var innerInput = input;
+            return TryGetBinaryNode(ref innerInput, out var root)
                 ? root
                 : throw new AstParserException("Unable to parse input: " + input);
         }
 
-        private bool TryGetBinaryNode(string input, out BinaryNode output)
+        private bool TryGetBinaryNode(ref string input, out BinaryNode output, BinaryOperatorType requiredOp = BinaryOperatorType.Unknown)
         {
             var innerInput = input;
 
             if (TryGetUnaryNode(ref innerInput, out var left))
             {
                 output = new BinaryNode(left);
+                input = innerInput;
 
                 while (true)
                 {
                     if (!TryGetBinaryOperatorType(ref innerInput, out var op))
+                    {
+                        break;
+                    }
+
+                    if (requiredOp != BinaryOperatorType.Unknown && op != requiredOp)
                     {
                         break;
                     }
@@ -36,11 +49,12 @@ namespace ExpressionEvaluation.Core.Parsing
                         break;
                     }
 
-                    output.Rights.Add((op, right));
+                    output.Rights.Add(new BinaryNodeItem(op, right));
+                    input = innerInput;
                 }
 
-                // there have to be nothing left to parse
-                if (!string.IsNullOrEmpty(innerInput))
+                // there have to be nothing left to parse if we are not restricted by operator
+                if (requiredOp == BinaryOperatorType.Unknown && !string.IsNullOrEmpty(innerInput))
                 {
                     throw new AstParserException("Unable to parse: " + innerInput);
                 }
@@ -60,6 +74,13 @@ namespace ExpressionEvaluation.Core.Parsing
             {
                 input = innerInput;
                 output = expressionNode;
+                return true;
+            }
+
+            if (TryGetUnaryPrefixWithPowerNode(ref innerInput, out var prefixWithPowerNode))
+            {
+                input = innerInput;
+                output = prefixWithPowerNode;
                 return true;
             }
 
@@ -102,7 +123,7 @@ namespace ExpressionEvaluation.Core.Parsing
                         {
                             // block found
                             var innerInput = input.Substring(1, rightParenthesisIndex - 1);
-                            if (TryGetBinaryNode(innerInput, out var expression))
+                            if (TryGetBinaryNode(ref innerInput, out var expression))
                             {
                                 output = new UnaryExpressionNode(expression);
                                 input = input.Substring(rightParenthesisIndex + 1);
@@ -119,6 +140,30 @@ namespace ExpressionEvaluation.Core.Parsing
                     }
 
                     ++rightParenthesisIndex;
+                }
+            }
+
+            output = null;
+            return false;
+        }
+
+        private bool TryGetUnaryPrefixWithPowerNode(ref string input, out UnaryPrefixNode output)
+        {
+            if (input.Length > 0)
+            {
+                var op = UnaryOperator.CharToOperator(input[0]);
+                if (op != UnaryOperatorType.Unknown)
+                {
+                    var innerInput = input.Substring(1);
+                    if (TryGetBinaryNode(ref innerInput, out var innerBinaryNode, BinaryOperatorType.Power))
+                    {
+                        if (innerBinaryNode.Rights.Any())
+                        {
+                            input = innerInput;
+                            output = new UnaryPrefixNode(op, new UnaryExpressionNode(innerBinaryNode));
+                            return true;
+                        }
+                    }
                 }
             }
 

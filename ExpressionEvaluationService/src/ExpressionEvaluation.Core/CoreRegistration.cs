@@ -3,7 +3,7 @@ using ExpressionEvaluation.Core.Evaluation;
 using ExpressionEvaluation.Core.Parsing;
 using Microsoft.Extensions.DependencyInjection;
 
-[assembly:InternalsVisibleTo("ExpressionEvaluation.Tests")]
+[assembly:InternalsVisibleTo("ExpressionEvaluation.Core.Tests")]
 namespace ExpressionEvaluation.Core
 {
     /// <summary>

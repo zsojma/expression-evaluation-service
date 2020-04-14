@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 using ExpressionEvaluation.Core.Parsing;
 using Xunit;
 
-namespace ExpressionEvaluation.Tests
+namespace ExpressionEvaluation.Core.Tests
 {
     public class AstParserTests
     {
@@ -11,6 +11,7 @@ namespace ExpressionEvaluation.Tests
         [InlineData("-2")]
         [InlineData("+2")]
         [InlineData("--2")]
+        [InlineData("-2 * -(-2)")]
         [InlineData("22.2")]
         [InlineData("1 * (2 - 3)")]
         [InlineData("1 * (2 - -3)")]
@@ -26,7 +27,7 @@ namespace ExpressionEvaluation.Tests
             var parsed = parser.Parse(input);
 
             // Assert
-            Assert.Equal(RemoveSpaces(input), parsed.ToString());
+            Assert.Equal(FormatExpectedResult(input), parsed.ToString());
         }
 
         [Theory]
@@ -41,7 +42,7 @@ namespace ExpressionEvaluation.Tests
             var parsed = parser.Parse(input);
 
             // Assert
-            Assert.Equal(RemoveSpaces(expectedResult), parsed.ToString());
+            Assert.Equal(FormatExpectedResult(expectedResult), parsed.ToString());
         }
 
         [Theory]
@@ -82,9 +83,23 @@ namespace ExpressionEvaluation.Tests
             Assert.IsType<AstParserException>(exception);
         }
 
-        private string RemoveSpaces(string input)
+        private string FormatExpectedResult(string input)
         {
             return Regex.Replace(input, @"\s+", "");
+        }
+
+        [Fact]
+        public void Parse_PowerIsRightAssociative_SameResult()
+        {
+            // Arrange
+            var parser = new AstParser();
+
+            // Act
+            var parsed1 = parser.Parse("-2^-2^2");
+            var parsed2 = parser.Parse("-(2^-(2^2))");
+
+            // Assert
+            Assert.Equal(parsed1.ToString(), parsed2.ToString());
         }
     }
 }

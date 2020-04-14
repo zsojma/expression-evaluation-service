@@ -1,26 +1,39 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace ExpressionEvaluation.Core.ExpressionNodes
 {
-    public class BinaryNode
+    public class BinaryNodeItem
     {
-        public BinaryNode(UnaryNode left)
+        public BinaryNodeItem(BinaryOperatorType op, UnaryNode right)
         {
-            Left = left;
+            Operator = op;
+            Item = right;
         }
 
-        public UnaryNode Left { get; }
-        public List<(BinaryOperatorType, UnaryNode)> Rights { get; } = new List<(BinaryOperatorType, UnaryNode)>();
+        public BinaryOperatorType Operator { get; }
+        public UnaryNode Item { get; }
 
         public override string ToString()
         {
-            var output = Left.ToString();
-            foreach (var (op, right) in Rights)
-            {
-                output += $"{op.ToDisplayString()}{right}";
-            }
+            return $"{Operator.ToDisplayString()}{Item}";
+        }
+    }
 
-            return output;
+    public class BinaryNode
+    {
+        public BinaryNode(UnaryNode left, IEnumerable<BinaryNodeItem> rights = null)
+        {
+            Left = new BinaryNodeItem(BinaryOperatorType.Result, left);
+            Rights = rights != null ? rights.ToList() : new List<BinaryNodeItem>();
+        }
+
+        public BinaryNodeItem Left { get; }
+        public List<BinaryNodeItem> Rights { get; }
+
+        public override string ToString()
+        {
+            return Rights.Aggregate(Left.Item.ToString(), (current, item) => current + item);
         }
     }
 }
