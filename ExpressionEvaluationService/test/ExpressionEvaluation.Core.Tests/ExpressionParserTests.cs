@@ -4,7 +4,7 @@ using Xunit;
 
 namespace ExpressionEvaluation.Core.Tests
 {
-    public class AstParserTests
+    public class ExpressionParserTests
     {
         [Theory]
         [InlineData("2")]
@@ -21,7 +21,7 @@ namespace ExpressionEvaluation.Core.Tests
         public void Parse_CorrectInputWithoutPercentage_ReturnsCorrectData(string input)
         {
             // Arrange
-            var parser = new AstParser();
+            var parser = new ExpressionParser();
 
             // Act
             var parsed = parser.Parse(input);
@@ -36,7 +36,7 @@ namespace ExpressionEvaluation.Core.Tests
         public void Parse_CorrectInputWithPercentage_ReturnsCorrectData(string input, string expectedResult)
         {
             // Arrange
-            var parser = new AstParser();
+            var parser = new ExpressionParser();
 
             // Act
             var parsed = parser.Parse(input);
@@ -52,16 +52,16 @@ namespace ExpressionEvaluation.Core.Tests
         public void Parse_InvalidCharacter_ThrowException(string input, params string[] expectedInvalidCharacters)
         {
             // Arrange
-            var parser = new AstParser();
+            var parser = new ExpressionParser();
 
             // Act
             var exception = Record.Exception(() => parser.Parse(input));
 
             // Assert
             Assert.NotNull(exception);
-            Assert.IsType<AstParserException>(exception);
+            Assert.IsType<ExpressionParserException>(exception);
 
-            var astException = exception as AstParserException;
+            var astException = exception as ExpressionParserException;
             foreach (var expectedInvalidCharacter in expectedInvalidCharacters)
             {
                 Assert.Contains($"'{expectedInvalidCharacter}'", astException.Message);
@@ -73,14 +73,14 @@ namespace ExpressionEvaluation.Core.Tests
         public void Parse_InvalidInputWithPercentage_ThrowsException(string input)
         {
             // Arrange
-            var parser = new AstParser();
+            var parser = new ExpressionParser();
 
             // Act
             var exception = Record.Exception(() => parser.Parse(input));
 
             // Assert
             Assert.NotNull(exception);
-            Assert.IsType<AstParserException>(exception);
+            Assert.IsType<ExpressionParserException>(exception);
         }
 
         private string FormatExpectedResult(string input)
@@ -92,7 +92,7 @@ namespace ExpressionEvaluation.Core.Tests
         public void Parse_PowerIsRightAssociative_SameResult()
         {
             // Arrange
-            var parser = new AstParser();
+            var parser = new ExpressionParser();
 
             // Act
             var parsed1 = parser.Parse("-2^-2^2");

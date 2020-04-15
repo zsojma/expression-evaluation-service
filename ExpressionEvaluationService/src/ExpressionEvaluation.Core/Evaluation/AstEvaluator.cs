@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using ExpressionEvaluation.Core.ExpressionNodes;
+using ExpressionEvaluation.Core.Nodes;
+using ExpressionEvaluation.Core.Nodes.Binary;
+using ExpressionEvaluation.Core.Nodes.Unary;
 
 namespace ExpressionEvaluation.Core.Evaluation
 {
-    internal class ExpressionEvaluator : IExpressionEvaluator
+    internal class AstEvaluator : IAstEvaluator
     {
         public decimal Evaluate(BinaryNode input)
         {
@@ -23,7 +25,7 @@ namespace ExpressionEvaluation.Core.Evaluation
             }
 
             // evaluate whole level
-            var newNode = EvaluateBinaryLevel(input, level);
+            var newNode = EvaluateBinaryNodeLevel(input, level);
 
             // continue with next level if available
             if (++level < PriorityLevel.Result)
@@ -36,7 +38,7 @@ namespace ExpressionEvaluation.Core.Evaluation
             return Evaluate(newNode.Left.Item);
         }
 
-        private BinaryNode EvaluateBinaryLevel(BinaryNode input, PriorityLevel level)
+        private BinaryNode EvaluateBinaryNodeLevel(BinaryNode input, PriorityLevel level)
         {
             if (!input.Rights.Any() || input.Rights.All(x => GetPriorityLevel(x.Operator) != level))
             {
@@ -72,8 +74,8 @@ namespace ExpressionEvaluation.Core.Evaluation
                 }
 
                 var resultItem = GetEvaluationOrder(op) == BinaryOperatorEvaluationOrder.Left
-                    ? EvaluationBinaryLevelInLeftOrder(levelItems)
-                    : EvaluationBinaryLevelInRightOrder(levelItems);
+                    ? EvaluationBinaryNodeLevelInLeftOrder(levelItems)
+                    : EvaluationBinaryNodeLevelInRightOrder(levelItems);
 
                 // replace value in the expression chain
                 wholeExpression[i] = resultItem;
@@ -90,7 +92,7 @@ namespace ExpressionEvaluation.Core.Evaluation
             return new BinaryNode(wholeExpression[0].Item, wholeExpression.Skip(1));
         }
 
-        private BinaryNodeItem EvaluationBinaryLevelInLeftOrder(IReadOnlyCollection<BinaryNodeItem> input)
+        private BinaryNodeItem EvaluationBinaryNodeLevelInLeftOrder(IReadOnlyCollection<BinaryNodeItem> input)
         {
             if (input.Count <= 1)
             {
@@ -108,7 +110,7 @@ namespace ExpressionEvaluation.Core.Evaluation
             return left;
         }
 
-        private BinaryNodeItem EvaluationBinaryLevelInRightOrder(IReadOnlyCollection<BinaryNodeItem> input)
+        private BinaryNodeItem EvaluationBinaryNodeLevelInRightOrder(IReadOnlyCollection<BinaryNodeItem> input)
         {
             if (input.Count <= 1)
             {
@@ -117,7 +119,7 @@ namespace ExpressionEvaluation.Core.Evaluation
 
             var left = input.First();
             var right = input.Skip(1).ToArray();
-            var value = EvaluateBinaryOperation(left, EvaluationBinaryLevelInRightOrder(right));
+            var value = EvaluateBinaryOperation(left, EvaluationBinaryNodeLevelInRightOrder(right));
             return new BinaryNodeItem(left.Operator, new UnaryValueNode(value));
         }
 
@@ -134,27 +136,7 @@ namespace ExpressionEvaluation.Core.Evaluation
             };
         }
 
-        private bool TryEvaluatePower(UnaryNode left, ref List<BinaryNodeItem> rights, out UnaryNode result)
-        {
-            if (rights.Any() && rights[0].Operator == BinaryOperatorType.Power)
-            {
-                // power is right associative, try evaluate power in right expression first
-                var childList = new List<BinaryNodeItem>(rights.Skip(1));
-                if (!TryEvaluatePower(rights[0].Item, ref childList, out var right))
-                {
-                    right = new UnaryValueNode(Evaluate(rights[0].Item));
-                    rights = childList;
-                }
-
-                result = new UnaryValueNode((decimal)Math.Pow((double)Evaluate(left), (double)Evaluate(right)));
-                return true;
-            }
-
-            result = null;
-            return false;
-        }
-
-        private decimal Evaluate(UnaryNode input)
+        private decimal Evaluate(IUnaryNode input)
         {
             switch (input)
             {
@@ -180,37 +162,17 @@ namespace ExpressionEvaluation.Core.Evaluation
             return multiply * Evaluate(input.Value);
         }
 
-        private enum PriorityLevel
-        {
-            One,
-            Two,
-            Three,
-            Four,
-            Result
-        }
-
         private PriorityLevel GetPriorityLevel(BinaryOperatorType op)
         {
             return op switch
             {
-                BinaryOperatorType.Add => PriorityLevel.Four,
-                BinaryOperatorType.Subtract => PriorityLevel.Four,
+                BinaryOperatorType.Add => PriorityLevel.Three,
+                BinaryOperatorType.Subtract => PriorityLevel.Three,
                 BinaryOperatorType.Multiply => PriorityLevel.Two,
                 BinaryOperatorType.Divide => PriorityLevel.Two,
                 BinaryOperatorType.Power => PriorityLevel.One,
                 _ => throw new InvalidOperationException("Unknown binary operator type!")
             };
-        }
-
-        private PriorityLevel GetPriorityLevel(UnaryOperatorType op)
-        {
-            return PriorityLevel.Three;
-        }
-
-        private enum BinaryOperatorEvaluationOrder
-        {
-            Left,
-            Right
         }
 
         private BinaryOperatorEvaluationOrder GetEvaluationOrder(BinaryOperatorType op)
@@ -220,6 +182,20 @@ namespace ExpressionEvaluation.Core.Evaluation
                 BinaryOperatorType.Power => BinaryOperatorEvaluationOrder.Right,
                 _ => BinaryOperatorEvaluationOrder.Left
             };
+        }
+
+        private enum PriorityLevel
+        {
+            One,
+            Two,
+            Three,
+            Result
+        }
+
+        private enum BinaryOperatorEvaluationOrder
+        {
+            Left,
+            Right
         }
     }
 }

@@ -41,7 +41,7 @@ namespace ExpressionEvaluation.Api.Controllers
         {
             try
             {
-                return Ok(_evaluationFacade.Compute(expr));
+                return Ok(_evaluationFacade.Evaluate(expr));
             }
             catch (ExpressionEvaluationFacadeException ex)
             {

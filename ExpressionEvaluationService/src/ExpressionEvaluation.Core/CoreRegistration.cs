@@ -18,8 +18,8 @@ namespace ExpressionEvaluation.Core
         /// <returns>Services collection</returns>
         public static IServiceCollection RegisterCoreServices(this IServiceCollection services)
         {
-            services.AddTransient<IAstParser, AstParser>();
-            services.AddTransient<IExpressionEvaluator, ExpressionEvaluator>();
+            services.AddTransient<IExpressionParser, ExpressionParser>();
+            services.AddTransient<IAstEvaluator, AstEvaluator>();
 
             return services;
         }

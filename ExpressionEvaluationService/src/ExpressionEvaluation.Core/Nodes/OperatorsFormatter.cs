@@ -1,18 +1,20 @@
-﻿namespace ExpressionEvaluation.Core.ExpressionNodes
-{
-    public enum BinaryOperatorType
-    {
-        Unknown,
-        Result,
-        Add,
-        Subtract,
-        Multiply,
-        Divide,
-        Power
-    }
+﻿using ExpressionEvaluation.Core.Nodes.Binary;
+using ExpressionEvaluation.Core.Nodes.Unary;
 
-    public static class BinaryOperator
+namespace ExpressionEvaluation.Core.Nodes
+{
+    internal static class OperatorsFormatter
     {
+        public static string ToDisplayString(this UnaryOperatorType op)
+        {
+            return op switch
+            {
+                UnaryOperatorType.Plus => "+",
+                UnaryOperatorType.Minus => "-",
+                _ => ""
+            };
+        }
+
         public static string ToDisplayString(this BinaryOperatorType op)
         {
             return op switch
@@ -27,7 +29,17 @@
             };
         }
 
-        public static BinaryOperatorType CharToOperator(char input)
+        public static UnaryOperatorType CharToUnaryOperator(char input)
+        {
+            return input switch
+            {
+                '+' => UnaryOperatorType.Plus,
+                '-' => UnaryOperatorType.Minus,
+                _ => UnaryOperatorType.Unknown
+            };
+        }
+
+        public static BinaryOperatorType CharToBinaryOperator(char input)
         {
             return input switch
             {
