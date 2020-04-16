@@ -69,7 +69,26 @@ namespace ExpressionEvaluation.Core.Tests
         }
 
         [Theory]
+        [InlineData("1-")]
+        [InlineData("*1")]
+        [InlineData("1^-")]
+        [InlineData("/-2")]
+        public void Parse_InvalidInput_ThrowsException(string input)
+        {
+            // Arrange
+            var parser = new ExpressionParser();
+
+            // Act
+            var exception = Record.Exception(() => parser.Parse(input));
+
+            // Assert
+            Assert.NotNull(exception);
+            Assert.IsType<ExpressionParserException>(exception);
+        }
+
+        [Theory]
         [InlineData("(1 * (2 - 3)%)")]
+        [InlineData("(1 * (2 - 3))%")]
         public void Parse_InvalidInputWithPercentage_ThrowsException(string input)
         {
             // Arrange

@@ -1,6 +1,5 @@
 using System;
 using ExpressionEvaluation.Core.Evaluation;
-using ExpressionEvaluation.Core.Nodes;
 using ExpressionEvaluation.Core.Nodes.Binary;
 using ExpressionEvaluation.Core.Nodes.Unary;
 using Xunit;

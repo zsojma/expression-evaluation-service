@@ -60,9 +60,9 @@ namespace ExpressionEvaluation.Core.Parsing
                 }
 
                 // there have to be nothing left to parse if we are not restricted by operator
-                if (requiredOp == BinaryOperatorType.Unknown && !string.IsNullOrEmpty(innerInput))
+                if (requiredOp == BinaryOperatorType.Unknown && !string.IsNullOrEmpty(input))
                 {
-                    throw new ExpressionParserException("Unable to parse: " + innerInput);
+                    throw new ExpressionParserException("Unable to parse: " + input);
                 }
 
                 output = new BinaryNode(left, rights);
@@ -205,11 +205,11 @@ namespace ExpressionEvaluation.Core.Parsing
             if (match.Success && double.TryParse(match.Groups[1].Value, out var inputValue))
             {
                 // convert from percentage to double
-                var decimalValue = match.Groups[2].Value == "%"
+                var doubleValue = match.Groups[2].Value == "%"
                     ? inputValue / 100
                     : inputValue;
                 
-                output = new UnaryValueNode(decimalValue);
+                output = new UnaryValueNode(doubleValue);
                 input = match.Groups[3].Value;
                 return true;
             }

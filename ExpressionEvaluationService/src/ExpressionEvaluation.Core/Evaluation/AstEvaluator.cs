@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using ExpressionEvaluation.Core.Nodes;
 using ExpressionEvaluation.Core.Nodes.Binary;
 using ExpressionEvaluation.Core.Nodes.Unary;
 
