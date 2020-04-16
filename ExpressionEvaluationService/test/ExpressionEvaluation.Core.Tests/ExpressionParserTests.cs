@@ -83,11 +83,6 @@ namespace ExpressionEvaluation.Core.Tests
             Assert.IsType<ExpressionParserException>(exception);
         }
 
-        private string FormatExpectedResult(string input)
-        {
-            return Regex.Replace(input, @"\s+", "");
-        }
-
         [Fact]
         public void Parse_PowerIsRightAssociative_SameResult()
         {
@@ -100,6 +95,11 @@ namespace ExpressionEvaluation.Core.Tests
 
             // Assert
             Assert.Equal(parsed1.ToString(), parsed2.ToString());
+        }
+
+        private string FormatExpectedResult(string input)
+        {
+            return Regex.Replace(input, @"\s+", "");
         }
     }
 }

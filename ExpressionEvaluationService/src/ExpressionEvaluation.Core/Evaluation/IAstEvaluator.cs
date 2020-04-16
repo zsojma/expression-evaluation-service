@@ -13,6 +13,6 @@ namespace ExpressionEvaluation.Core.Evaluation
         /// </summary>
         /// <param name="root">Root of input AST tree</param>
         /// <returns>Result of the evaluation</returns>
-        decimal Evaluate(BinaryNode root);
+        double Evaluate(BinaryNode root);
     }
 }

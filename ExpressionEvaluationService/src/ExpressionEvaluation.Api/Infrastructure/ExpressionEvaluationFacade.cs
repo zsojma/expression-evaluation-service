@@ -28,7 +28,7 @@ namespace ExpressionEvaluation.Api.Infrastructure
         /// </summary>
         /// <param name="expr">Input expression to evaluate</param>
         /// <returns>Evaluated value</returns>
-        public decimal Evaluate(string expr)
+        public double Evaluate(string expr)
         {
             try
             {

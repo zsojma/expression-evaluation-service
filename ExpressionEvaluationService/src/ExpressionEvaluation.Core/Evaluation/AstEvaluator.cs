@@ -10,12 +10,12 @@ namespace ExpressionEvaluation.Core.Evaluation
 {
     internal class AstEvaluator : IAstEvaluator
     {
-        public decimal Evaluate(BinaryNode input)
+        public double Evaluate(BinaryNode input)
         {
             return Evaluate(input, PriorityLevel.One);
         }
 
-        private decimal Evaluate(BinaryNode input, PriorityLevel level)
+        private double Evaluate(BinaryNode input, PriorityLevel level)
         {
             var rightItem = input.Rights.FirstOrDefault();
             if (rightItem == null)
@@ -123,7 +123,7 @@ namespace ExpressionEvaluation.Core.Evaluation
             return new BinaryNodeItem(left.Operator, new UnaryValueNode(value));
         }
 
-        private decimal EvaluateBinaryOperation(BinaryNodeItem left, BinaryNodeItem right)
+        private double EvaluateBinaryOperation(BinaryNodeItem left, BinaryNodeItem right)
         {
             return right.Operator switch
             {
@@ -131,12 +131,12 @@ namespace ExpressionEvaluation.Core.Evaluation
                 BinaryOperatorType.Subtract => Evaluate(left.Item) - Evaluate(right.Item),
                 BinaryOperatorType.Multiply => Evaluate(left.Item) * Evaluate(right.Item),
                 BinaryOperatorType.Divide   => Evaluate(left.Item) / Evaluate(right.Item),
-                BinaryOperatorType.Power    => (decimal)Math.Pow((double)Evaluate(left.Item), (double)Evaluate(right.Item)),
+                BinaryOperatorType.Power    => Math.Pow(Evaluate(left.Item), Evaluate(right.Item)),
                 _ => throw new InvalidOperationException("Unknown operator type!")
             };
         }
 
-        private decimal Evaluate(IUnaryNode input)
+        private double Evaluate(IUnaryNode input)
         {
             switch (input)
             {
@@ -151,12 +151,12 @@ namespace ExpressionEvaluation.Core.Evaluation
             }
         }
 
-        private decimal Evaluate(UnaryPrefixNode input)
+        private double Evaluate(UnaryPrefixNode input)
         {
-            var multiply = 1.0m;
+            var multiply = 1.0;
             if (input.Operator == UnaryOperatorType.Minus)
             {
-                multiply = -1.0m;
+                multiply = -1.0;
             }
 
             return multiply * Evaluate(input.Value);

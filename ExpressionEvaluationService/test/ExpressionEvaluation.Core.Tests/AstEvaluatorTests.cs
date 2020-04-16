@@ -1,3 +1,4 @@
+using System;
 using ExpressionEvaluation.Core.Evaluation;
 using ExpressionEvaluation.Core.Nodes;
 using ExpressionEvaluation.Core.Nodes.Binary;
@@ -134,7 +135,31 @@ namespace ExpressionEvaluation.Core.Tests
             var result = parser.Evaluate(input);
 
             // Assert
-            Assert.Equal(-4, result);
+            Assert.Equal(-Math.Pow(2, 2), result);
+        }
+
+        [Fact]
+        public void Evaluate_PowerOfNegativeExpression_ReturnsCorrectResult()
+        {
+            // Arrange
+            var subtract = new BinaryNode(
+                new UnaryValueNode(1),
+                new[] { new BinaryNodeItem(BinaryOperatorType.Subtract, new UnaryValueNode(2)) });
+
+            var input = new BinaryNode(
+                new UnaryExpressionNode(subtract),
+                new[]
+                {
+                    new BinaryNodeItem(BinaryOperatorType.Power, new UnaryValueNode(3))
+                });
+
+            var parser = new AstEvaluator();
+
+            // Act
+            var result = parser.Evaluate(input);
+
+            // Assert
+            Assert.Equal(Math.Pow(1-2, 3), result);
         }
     }
 }

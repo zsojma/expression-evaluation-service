@@ -9,7 +9,7 @@
         /// Constructor
         /// </summary>
         /// <param name="value">Value of the node</param>
-        public UnaryValueNode(decimal value)
+        public UnaryValueNode(double value)
         {
             Value = value;
         }
@@ -17,7 +17,7 @@
         /// <summary>
         /// Value of the node
         /// </summary>
-        public decimal Value { get; }
+        public double Value { get; }
 
         /// <inheritdoc />
         public override string ToString()

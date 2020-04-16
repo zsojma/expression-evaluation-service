@@ -202,9 +202,9 @@ namespace ExpressionEvaluation.Core.Parsing
         private bool TryGetUnaryValueNode(ref string input, out UnaryValueNode? output)
         {
             var match = Regex.Match(input, @"^([0-9\.]+)(%?)(.*)");
-            if (match.Success && decimal.TryParse(match.Groups[1].Value, out var inputValue))
+            if (match.Success && double.TryParse(match.Groups[1].Value, out var inputValue))
             {
-                // convert from percentage to decimal
+                // convert from percentage to double
                 var decimalValue = match.Groups[2].Value == "%"
                     ? inputValue / 100
                     : inputValue;
