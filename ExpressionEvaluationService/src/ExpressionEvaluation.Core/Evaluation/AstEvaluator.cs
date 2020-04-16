@@ -146,7 +146,7 @@ namespace ExpressionEvaluation.Core.Evaluation
                 case UnaryExpressionNode expressionNode:
                     return Evaluate(expressionNode.Expression);
                 default:
-                    throw new InvalidCastException("Unknown type of input object!");
+                    throw new InvalidOperationException("Unknown type of input object!");
             }
         }
 

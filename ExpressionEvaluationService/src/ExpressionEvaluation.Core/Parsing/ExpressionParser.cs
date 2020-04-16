@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
 using ExpressionEvaluation.Core.Nodes;
@@ -21,7 +22,7 @@ namespace ExpressionEvaluation.Core.Parsing
             ValidateInput(input);
 
             var innerInput = input;
-            if (TryGetBinaryNode(ref innerInput, out var root) && root != null)
+            if (TryGetBinaryNode(ref innerInput, out var root))
             {
                 return root;
             }
@@ -29,11 +30,14 @@ namespace ExpressionEvaluation.Core.Parsing
             throw new ExpressionParserException("Unable to parse input: " + input);
         }
 
-        private bool TryGetBinaryNode(ref string input, out BinaryNode? output, BinaryOperatorType requiredOp = BinaryOperatorType.Unknown)
+        private bool TryGetBinaryNode(
+            ref string input,
+            [NotNullWhen(true)] out BinaryNode? output,
+            BinaryOperatorType requiredOp = BinaryOperatorType.Unknown)
         {
             var innerInput = input;
 
-            if (TryGetUnaryNode(ref innerInput, out var left) && left != null)
+            if (TryGetUnaryNode(ref innerInput, out var left))
             {
                 var rights = new List<BinaryNodeItem>();
                 input = innerInput;
@@ -50,7 +54,7 @@ namespace ExpressionEvaluation.Core.Parsing
                         break;
                     }
 
-                    if (!TryGetUnaryNode(ref innerInput, out var right) || right == null)
+                    if (!TryGetUnaryNode(ref innerInput, out var right))
                     {
                         break;
                     }
@@ -73,7 +77,7 @@ namespace ExpressionEvaluation.Core.Parsing
             return false;
         }
 
-        private bool TryGetUnaryNode(ref string input, out IUnaryNode? output)
+        private bool TryGetUnaryNode(ref string input, [NotNullWhen(true)] out IUnaryNode? output)
         {
             var innerInput = input;
 
@@ -109,7 +113,7 @@ namespace ExpressionEvaluation.Core.Parsing
             return false;
         }
 
-        private bool TryGetUnaryExpressionNode(ref string input, out UnaryExpressionNode? output)
+        private bool TryGetUnaryExpressionNode(ref string input, [NotNullWhen(true)] out UnaryExpressionNode? output)
         {
             if (input.StartsWith("("))
             {
@@ -130,7 +134,7 @@ namespace ExpressionEvaluation.Core.Parsing
                         {
                             // block found
                             var innerInput = input.Substring(1, rightParenthesisIndex - 1);
-                            if (TryGetBinaryNode(ref innerInput, out var expression) && expression != null)
+                            if (TryGetBinaryNode(ref innerInput, out var expression))
                             {
                                 output = new UnaryExpressionNode(expression);
                                 input = input.Substring(rightParenthesisIndex + 1);
@@ -154,7 +158,7 @@ namespace ExpressionEvaluation.Core.Parsing
             return false;
         }
 
-        private bool TryGetUnaryPrefixWithPowerNode(ref string input, out UnaryPrefixNode? output)
+        private bool TryGetUnaryPrefixWithPowerNode(ref string input, [NotNullWhen(true)] out UnaryPrefixNode? output)
         {
             if (input.Length > 0)
             {
@@ -162,7 +166,7 @@ namespace ExpressionEvaluation.Core.Parsing
                 if (op != UnaryOperatorType.Unknown)
                 {
                     var innerInput = input.Substring(1);
-                    if (TryGetBinaryNode(ref innerInput, out var innerBinaryNode, BinaryOperatorType.Power) && innerBinaryNode != null)
+                    if (TryGetBinaryNode(ref innerInput, out var innerBinaryNode, BinaryOperatorType.Power))
                     {
                         if (innerBinaryNode.Rights.Any())
                         {
@@ -178,7 +182,7 @@ namespace ExpressionEvaluation.Core.Parsing
             return false;
         }
 
-        private bool TryGetUnaryPrefixNode(ref string input, out UnaryPrefixNode? output)
+        private bool TryGetUnaryPrefixNode(ref string input, [NotNullWhen(true)] out UnaryPrefixNode? output)
         {
             if (input.Length > 0)
             {
@@ -186,7 +190,7 @@ namespace ExpressionEvaluation.Core.Parsing
                 if (op != UnaryOperatorType.Unknown)
                 {
                     var innerInput = input.Substring(1);
-                    if (TryGetUnaryNode(ref innerInput, out var innerUnaryNode) && innerUnaryNode != null)
+                    if (TryGetUnaryNode(ref innerInput, out var innerUnaryNode))
                     {
                         input = innerInput;
                         output = new UnaryPrefixNode(op, innerUnaryNode);
@@ -199,7 +203,7 @@ namespace ExpressionEvaluation.Core.Parsing
             return false;
         }
 
-        private bool TryGetUnaryValueNode(ref string input, out UnaryValueNode? output)
+        private bool TryGetUnaryValueNode(ref string input, [NotNullWhen(true)] out UnaryValueNode? output)
         {
             var match = Regex.Match(input, @"^([0-9\.]+)(%?)(.*)");
             if (match.Success && double.TryParse(match.Groups[1].Value, out var inputValue))
@@ -218,7 +222,7 @@ namespace ExpressionEvaluation.Core.Parsing
             return false;
         }
 
-        private bool TryGetBinaryOperatorType(ref string input, out BinaryOperatorType output)
+        private bool TryGetBinaryOperatorType(ref string input, [NotNullWhen(true)] out BinaryOperatorType output)
         {
             if (input.Length > 0)
             {
