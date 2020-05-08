@@ -1,13 +1,13 @@
 ﻿using ExpressionEvaluation.Api.Infrastructure;
-using ExpressionEvaluation.Core.Evaluation;
-using ExpressionEvaluation.Core.Nodes.Binary;
-using ExpressionEvaluation.Core.Parsing;
 using Moq;
+using NumericExpressionEvaluation.Core.Evaluation;
+using NumericExpressionEvaluation.Core.Nodes.Binary;
+using NumericExpressionEvaluation.Core.Parsing;
 using Xunit;
 
 namespace ExpressionEvaluation.Api.Tests
 {
-    public class ExpressionEvaluationFacadeTests
+    public class NumericExpressionEvaluationFacadeTests
     {
         [Fact]
         public void Compute_CallsBothObjects()
@@ -16,7 +16,7 @@ namespace ExpressionEvaluation.Api.Tests
             var astParserMock = new Mock<IExpressionParser>();
             var evaluationMock = new Mock<IAstEvaluator>();
 
-            var facade = new ExpressionEvaluationFacade(astParserMock.Object, evaluationMock.Object);
+            var facade = new NumericExpressionEvaluationFacade(astParserMock.Object, evaluationMock.Object);
 
             // Act
             facade.Evaluate("test");
@@ -34,7 +34,7 @@ namespace ExpressionEvaluation.Api.Tests
             astParserMock.Setup(m => m.Parse(It.IsAny<string>())).Throws(new ExpressionParserException("test"));
             var evaluationMock = new Mock<IAstEvaluator>();
 
-            var facade = new ExpressionEvaluationFacade(astParserMock.Object, evaluationMock.Object);
+            var facade = new NumericExpressionEvaluationFacade(astParserMock.Object, evaluationMock.Object);
 
             // Act
             var exception = Record.Exception(() => facade.Evaluate("test"));

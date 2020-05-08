@@ -2,11 +2,11 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
-using ExpressionEvaluation.Core.Nodes;
-using ExpressionEvaluation.Core.Nodes.Binary;
-using ExpressionEvaluation.Core.Nodes.Unary;
+using NumericExpressionEvaluation.Core.Nodes;
+using NumericExpressionEvaluation.Core.Nodes.Binary;
+using NumericExpressionEvaluation.Core.Nodes.Unary;
 
-namespace ExpressionEvaluation.Core.Parsing
+namespace NumericExpressionEvaluation.Core.Parsing
 {
     internal class ExpressionParser : IExpressionParser
     {

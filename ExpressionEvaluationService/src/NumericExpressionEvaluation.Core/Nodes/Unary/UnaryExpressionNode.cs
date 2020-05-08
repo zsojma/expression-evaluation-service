@@ -1,6 +1,6 @@
-﻿using ExpressionEvaluation.Core.Nodes.Binary;
+﻿using NumericExpressionEvaluation.Core.Nodes.Binary;
 
-namespace ExpressionEvaluation.Core.Nodes.Unary
+namespace NumericExpressionEvaluation.Core.Nodes.Unary
 {
     /// <summary>
     /// Expression unary node, contains inner binary expression

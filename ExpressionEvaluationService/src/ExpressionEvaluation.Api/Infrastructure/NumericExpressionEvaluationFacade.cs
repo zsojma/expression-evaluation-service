@@ -1,13 +1,13 @@
-﻿using ExpressionEvaluation.Core;
-using ExpressionEvaluation.Core.Evaluation;
-using ExpressionEvaluation.Core.Parsing;
+﻿using NumericExpressionEvaluation.Core;
+using NumericExpressionEvaluation.Core.Evaluation;
+using NumericExpressionEvaluation.Core.Parsing;
 
 namespace ExpressionEvaluation.Api.Infrastructure
 {
     /// <summary>
     /// Evaluates expressions
     /// </summary>
-    public class ExpressionEvaluationFacade
+    public class NumericExpressionEvaluationFacade
     {
         private readonly IExpressionParser _astParser;
         private readonly IAstEvaluator _evaluator;
@@ -17,7 +17,7 @@ namespace ExpressionEvaluation.Api.Infrastructure
         /// </summary>
         /// <param name="astParser">Parser </param>
         /// <param name="evaluator"></param>
-        public ExpressionEvaluationFacade(IExpressionParser astParser, IAstEvaluator evaluator)
+        public NumericExpressionEvaluationFacade(IExpressionParser astParser, IAstEvaluator evaluator)
         {
             _astParser = astParser;
             _evaluator = evaluator;
@@ -36,7 +36,7 @@ namespace ExpressionEvaluation.Api.Infrastructure
                 var result = _evaluator.Evaluate(ast);
                 return result;
             }
-            catch (CoreException ex)
+            catch (NumericEvaluationException ex)
             {
                 // format error message from Core
                 throw new ExpressionEvaluationFacadeException(ex);

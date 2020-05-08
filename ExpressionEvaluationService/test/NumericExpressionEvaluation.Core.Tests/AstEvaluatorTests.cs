@@ -1,10 +1,10 @@
 using System;
-using ExpressionEvaluation.Core.Evaluation;
-using ExpressionEvaluation.Core.Nodes.Binary;
-using ExpressionEvaluation.Core.Nodes.Unary;
+using NumericExpressionEvaluation.Core.Evaluation;
+using NumericExpressionEvaluation.Core.Nodes.Binary;
+using NumericExpressionEvaluation.Core.Nodes.Unary;
 using Xunit;
 
-namespace ExpressionEvaluation.Core.Tests
+namespace NumericExpressionEvaluation.Core.Tests
 {
     public class AstEvaluatorTests
     {

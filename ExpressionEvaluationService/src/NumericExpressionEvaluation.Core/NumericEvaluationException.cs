@@ -1,17 +1,17 @@
 ﻿using System;
 
-namespace ExpressionEvaluation.Core.Parsing
+namespace NumericExpressionEvaluation.Core
 {
     /// <summary>
-    /// Exception thrown when parsing of string to AST tree was not successful
+    /// Exception thrown from Core module
     /// </summary>
-    public class ExpressionParserException : CoreException
+    public abstract class NumericEvaluationException : Exception
     {
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="message">Error message</param>
-        public ExpressionParserException(string message)
+        protected internal NumericEvaluationException(string message)
             : base(message)
         {
         }
@@ -21,7 +21,7 @@ namespace ExpressionEvaluation.Core.Parsing
         /// </summary>
         /// <param name="message">Error message</param>
         /// <param name="innerException">Inner exception</param>
-        public ExpressionParserException(string message, Exception innerException)
+        protected internal NumericEvaluationException(string message, Exception innerException)
             : base(message, innerException)
         {
         }

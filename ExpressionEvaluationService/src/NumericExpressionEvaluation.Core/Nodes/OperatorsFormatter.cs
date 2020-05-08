@@ -1,7 +1,7 @@
-﻿using ExpressionEvaluation.Core.Nodes.Binary;
-using ExpressionEvaluation.Core.Nodes.Unary;
+﻿using NumericExpressionEvaluation.Core.Nodes.Binary;
+using NumericExpressionEvaluation.Core.Nodes.Unary;
 
-namespace ExpressionEvaluation.Core.Nodes
+namespace NumericExpressionEvaluation.Core.Nodes
 {
     internal static class OperatorsFormatter
     {

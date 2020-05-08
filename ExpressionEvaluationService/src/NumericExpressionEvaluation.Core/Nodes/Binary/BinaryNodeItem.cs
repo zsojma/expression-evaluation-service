@@ -1,6 +1,6 @@
-﻿using ExpressionEvaluation.Core.Nodes.Unary;
+﻿using NumericExpressionEvaluation.Core.Nodes.Unary;
 
-namespace ExpressionEvaluation.Core.Nodes.Binary
+namespace NumericExpressionEvaluation.Core.Nodes.Binary
 {
     /// <summary>
     /// Binary node item used as right part of an expression

@@ -6,11 +6,11 @@ using Xunit;
 
 namespace ExpressionEvaluation.Api.Tests
 {
-    public class ApiTests : IClassFixture<WebApplicationFactory<Startup>>
+    public class NumericApiTests : IClassFixture<WebApplicationFactory<Startup>>
     {
         private readonly WebApplicationFactory<Startup> _factory;
 
-        public ApiTests(WebApplicationFactory<Startup> factory)
+        public NumericApiTests(WebApplicationFactory<Startup> factory)
         {
             _factory = factory;
         }
@@ -26,7 +26,7 @@ namespace ExpressionEvaluation.Api.Tests
             var encodedExpr = HttpUtility.UrlEncode(expression);
 
             // Act
-            var response = await client.GetAsync("/compute?expr=" + encodedExpr);
+            var response = await client.GetAsync("/api/numeric/compute?expr=" + encodedExpr);
 
             // Assert
             response.EnsureSuccessStatusCode(); // Status Code 200-299
@@ -47,7 +47,7 @@ namespace ExpressionEvaluation.Api.Tests
             var encodedExpr = HttpUtility.UrlEncode(expression);
 
             // Act
-            var response = await client.GetAsync("/compute?expr=" + encodedExpr);
+            var response = await client.GetAsync("/api/numeric/compute?expr=" + encodedExpr);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);

@@ -10,25 +10,25 @@ namespace ExpressionEvaluation.Api.Controllers
     /// Evaluates expressions in input string
     /// </summary>
     [ApiController]
-    [Route("")]
-    public class ExpressionEvaluationController : ControllerBase
+    [Route("api/numeric")]
+    public class NumericExpressionEvaluationController : ControllerBase
     {
-        private readonly ExpressionEvaluationFacade _evaluationFacade;
-        private readonly ILogger<ExpressionEvaluationController> _logger;
+        private readonly NumericExpressionEvaluationFacade _evaluationFacade;
+        private readonly ILogger<NumericExpressionEvaluationController> _logger;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="evaluationFacade">Expression evaluation facade</param>
         /// <param name="logger">Logger</param>
-        public ExpressionEvaluationController(ExpressionEvaluationFacade evaluationFacade, ILogger<ExpressionEvaluationController> logger)
+        public NumericExpressionEvaluationController(NumericExpressionEvaluationFacade evaluationFacade, ILogger<NumericExpressionEvaluationController> logger)
         {
             _evaluationFacade = evaluationFacade;
             _logger = logger;
         }
 
         /// <summary>
-        /// Evaluates expression in input query string
+        /// Evaluates numeric expression in input query string
         /// </summary>
         /// <param name="expr">Input query string</param>
         /// <returns>Computed value</returns>

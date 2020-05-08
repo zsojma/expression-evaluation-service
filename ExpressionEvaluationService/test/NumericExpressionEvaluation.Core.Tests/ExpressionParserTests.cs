@@ -1,8 +1,8 @@
 using System.Text.RegularExpressions;
-using ExpressionEvaluation.Core.Parsing;
+using NumericExpressionEvaluation.Core.Parsing;
 using Xunit;
 
-namespace ExpressionEvaluation.Core.Tests
+namespace NumericExpressionEvaluation.Core.Tests
 {
     public class ExpressionParserTests
     {

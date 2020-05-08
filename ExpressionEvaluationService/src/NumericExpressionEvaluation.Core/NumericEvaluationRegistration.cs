@@ -1,15 +1,15 @@
 ﻿using System.Runtime.CompilerServices;
-using ExpressionEvaluation.Core.Evaluation;
-using ExpressionEvaluation.Core.Parsing;
 using Microsoft.Extensions.DependencyInjection;
+using NumericExpressionEvaluation.Core.Evaluation;
+using NumericExpressionEvaluation.Core.Parsing;
 
-[assembly:InternalsVisibleTo("ExpressionEvaluation.Core.Tests")]
-namespace ExpressionEvaluation.Core
+[assembly:InternalsVisibleTo("NumericExpressionEvaluation.Core.Tests")]
+namespace NumericExpressionEvaluation.Core
 {
     /// <summary>
     /// Registration of Core project services
     /// </summary>
-    public static class CoreRegistration
+    public static class NumericEvaluationRegistration
     {
         /// <summary>
         /// Registers services for Core project

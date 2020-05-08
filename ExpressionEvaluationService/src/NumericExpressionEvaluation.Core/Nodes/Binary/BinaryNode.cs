@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ExpressionEvaluation.Core.Nodes.Unary;
+using NumericExpressionEvaluation.Core.Nodes.Unary;
 
-namespace ExpressionEvaluation.Core.Nodes.Binary
+namespace NumericExpressionEvaluation.Core.Nodes.Binary
 {
     /// <summary>
     /// Binary node of AST tree. Consist of left part and multiple right parts

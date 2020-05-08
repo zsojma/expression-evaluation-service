@@ -1,4 +1,4 @@
-﻿namespace ExpressionEvaluation.Core.Nodes.Binary
+﻿namespace NumericExpressionEvaluation.Core.Nodes.Binary
 {
     /// <summary>
     /// Types of binary operator

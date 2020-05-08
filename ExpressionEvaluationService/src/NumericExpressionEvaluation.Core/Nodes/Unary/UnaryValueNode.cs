@@ -1,4 +1,4 @@
-﻿namespace ExpressionEvaluation.Core.Nodes.Unary
+﻿namespace NumericExpressionEvaluation.Core.Nodes.Unary
 {
     /// <summary>
     /// Value unary node, contains numeric result

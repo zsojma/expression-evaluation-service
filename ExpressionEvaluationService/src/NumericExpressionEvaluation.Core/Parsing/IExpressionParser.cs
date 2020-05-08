@@ -1,6 +1,6 @@
-﻿using ExpressionEvaluation.Core.Nodes.Binary;
+﻿using NumericExpressionEvaluation.Core.Nodes.Binary;
 
-namespace ExpressionEvaluation.Core.Parsing
+namespace NumericExpressionEvaluation.Core.Parsing
 {
     /// <summary>
     /// Parses expression in input string to AST tree

@@ -1,6 +1,6 @@
-﻿using ExpressionEvaluation.Core.Nodes.Binary;
+﻿using NumericExpressionEvaluation.Core.Nodes.Binary;
 
-namespace ExpressionEvaluation.Core.Evaluation
+namespace NumericExpressionEvaluation.Core.Evaluation
 {
     /// <summary>
     /// Evaluates expression defined by AST tree

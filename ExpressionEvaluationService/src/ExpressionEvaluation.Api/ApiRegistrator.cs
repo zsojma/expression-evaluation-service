@@ -17,7 +17,7 @@ namespace ExpressionEvaluation.Api
         /// <returns>Services collection</returns>
         public static IServiceCollection RegisterApiServices(this IServiceCollection services)
         {
-            services.AddTransient<ExpressionEvaluationFacade>();
+            services.AddTransient<NumericExpressionEvaluationFacade>();
 
             return services;
         }

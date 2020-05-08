@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ExpressionEvaluation.Core\ExpressionEvaluation.Core.csproj" />
+    <ProjectReference Include="..\NumericExpressionEvaluation.Core\NumericExpressionEvaluation.Core.csproj" />
   </ItemGroup>
 
 </Project>
