@@ -9,22 +9,21 @@ namespace NumericExpressionEvaluation.Core.Evaluation
 {
     internal class AstEvaluator : IAstEvaluator
     {
-        public double Evaluate(BinaryNode input)
+        public double Evaluate(BinaryNode root)
         {
-            return Evaluate(input, PriorityLevel.One);
+            return Evaluate(root, PriorityLevel.One);
         }
 
-        private double Evaluate(BinaryNode input, PriorityLevel level)
+        private double Evaluate(BinaryNode node, PriorityLevel level)
         {
-            var rightItem = input.Rights.FirstOrDefault();
-            if (rightItem == null)
+            if (!node.Rights.Any())
             {
                 // evaluate just left side as a result
-                return Evaluate(input.Left.Item);
+                return Evaluate(node.Left.Item);
             }
 
             // evaluate whole level
-            var newNode = EvaluateBinaryNodeLevel(input, level);
+            var newNode = EvaluateBinaryNodeLevel(node, level);
 
             // continue with next level if available
             if (++level < PriorityLevel.Result)
@@ -37,17 +36,17 @@ namespace NumericExpressionEvaluation.Core.Evaluation
             return Evaluate(newNode.Left.Item);
         }
 
-        private BinaryNode EvaluateBinaryNodeLevel(BinaryNode input, PriorityLevel level)
+        private BinaryNode EvaluateBinaryNodeLevel(BinaryNode node, PriorityLevel level)
         {
-            if (!input.Rights.Any() || input.Rights.All(x => GetPriorityLevel(x.Operator) != level))
+            if (!node.Rights.Any() || node.Rights.All(x => GetPriorityLevel(x.Operator) != level))
             {
                 // nothing to evaluate
-                return input;
+                return node;
             }
 
             // create chain of expressions from the binary node for simpler functionality
-            var wholeExpression = new List<BinaryNodeItem>(input.Rights);
-            wholeExpression.Insert(0, input.Left);
+            var wholeExpression = new List<BinaryNodeItem>(node.Rights);
+            wholeExpression.Insert(0, node.Left);
 
             for (var i = 0; i < wholeExpression.Count - 1; ++i)
             {
@@ -91,33 +90,32 @@ namespace NumericExpressionEvaluation.Core.Evaluation
             return new BinaryNode(wholeExpression[0].Item, wholeExpression.Skip(1));
         }
 
-        private BinaryNodeItem EvaluationBinaryNodeLevelInLeftOrder(IReadOnlyCollection<BinaryNodeItem> input)
+        private BinaryNodeItem EvaluationBinaryNodeLevelInLeftOrder(IReadOnlyCollection<BinaryNodeItem> node)
         {
-            if (input.Count <= 1)
+            if (node.Count <= 1)
             {
-                return input.FirstOrDefault();
+                return node.FirstOrDefault();
             }
 
-            var left = input.First();
-            var right = input.Skip(1).ToArray();
-            foreach (var item in right)
+            var left = node.First();
+            foreach (var right in node.Skip(1))
             {
-                var value = EvaluateBinaryOperation(left, item);
+                var value = EvaluateBinaryOperation(left, right);
                 left = new BinaryNodeItem(left.Operator, new UnaryValueNode(value));
             }
 
             return left;
         }
 
-        private BinaryNodeItem EvaluationBinaryNodeLevelInRightOrder(IReadOnlyCollection<BinaryNodeItem> input)
+        private BinaryNodeItem EvaluationBinaryNodeLevelInRightOrder(IReadOnlyCollection<BinaryNodeItem> node)
         {
-            if (input.Count <= 1)
+            if (node.Count <= 1)
             {
-                return input.FirstOrDefault();
+                return node.FirstOrDefault();
             }
 
-            var left = input.First();
-            var right = input.Skip(1).ToArray();
+            var left = node.First();
+            var right = node.Skip(1).ToArray();
             var value = EvaluateBinaryOperation(left, EvaluationBinaryNodeLevelInRightOrder(right));
             return new BinaryNodeItem(left.Operator, new UnaryValueNode(value));
         }
@@ -135,9 +133,9 @@ namespace NumericExpressionEvaluation.Core.Evaluation
             };
         }
 
-        private double Evaluate(IUnaryNode input)
+        private double Evaluate(IUnaryNode node)
         {
-            switch (input)
+            switch (node)
             {
                 case UnaryValueNode valueNode:
                     return valueNode.Value;
@@ -146,19 +144,19 @@ namespace NumericExpressionEvaluation.Core.Evaluation
                 case UnaryExpressionNode expressionNode:
                     return Evaluate(expressionNode.Expression);
                 default:
-                    throw new InvalidOperationException("Unknown type of input object!");
+                    throw new InvalidOperationException("Unknown type of node object!");
             }
         }
 
-        private double Evaluate(UnaryPrefixNode input)
+        private double Evaluate(UnaryPrefixNode node)
         {
             var multiply = 1.0;
-            if (input.Operator == UnaryOperatorType.Minus)
+            if (node.Operator == UnaryOperatorType.Minus)
             {
                 multiply = -1.0;
             }
 
-            return multiply * Evaluate(input.Value);
+            return multiply * Evaluate(node.Value);
         }
 
         private PriorityLevel GetPriorityLevel(BinaryOperatorType op)

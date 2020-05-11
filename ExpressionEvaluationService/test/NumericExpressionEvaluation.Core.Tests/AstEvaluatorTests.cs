@@ -20,55 +20,13 @@ namespace NumericExpressionEvaluation.Core.Tests
                     new BinaryNodeItem(BinaryOperatorType.Multiply, new UnaryValueNode(3))
                 });
 
-            var parser = new AstEvaluator();
+            var evaluator = new AstEvaluator();
 
             // Act
-            var result = parser.Evaluate(input);
+            var result = evaluator.Evaluate(input);
 
             // Assert
             Assert.Equal(11, result);
-        }
-
-        [Fact]
-        public void Evaluate_SameOperatorLeftOrder_ReturnsCorrectResult()
-        {
-            // Arrange
-            var input = new BinaryNode(
-                new UnaryValueNode(2),
-                new[]
-                {
-                    new BinaryNodeItem(BinaryOperatorType.Multiply, new UnaryValueNode(3)),
-                    new BinaryNodeItem(BinaryOperatorType.Multiply, new UnaryValueNode(4))
-                });
-
-            var parser = new AstEvaluator();
-
-            // Act
-            var result = parser.Evaluate(input);
-
-            // Assert
-            Assert.Equal(24, result);
-        }
-
-        [Fact]
-        public void Evaluate_SameOperatorRightOrder_ReturnsCorrectResult()
-        {
-            // Arrange
-            var input = new BinaryNode(
-                new UnaryValueNode(2),
-                new[]
-                {
-                    new BinaryNodeItem(BinaryOperatorType.Power, new UnaryValueNode(3)),
-                    new BinaryNodeItem(BinaryOperatorType.Power, new UnaryValueNode(2))
-                });
-
-            var parser = new AstEvaluator();
-
-            // Act
-            var result = parser.Evaluate(input);
-
-            // Assert
-            Assert.Equal(512, result);
         }
 
         [Fact]
@@ -86,13 +44,113 @@ namespace NumericExpressionEvaluation.Core.Tests
                     new BinaryNodeItem(BinaryOperatorType.Multiply, new UnaryValueNode(4)),
                 });
 
-            var parser = new AstEvaluator();
+            var evaluator = new AstEvaluator();
 
             // Act
-            var result = parser.Evaluate(input);
+            var result = evaluator.Evaluate(input);
 
             // Assert
             Assert.Equal(-39, result);
+        }
+
+        [Fact]
+        public void Evaluate_SimpleTwoLevelsAst_ReturnsCorrectResult()
+        {
+            // Arrange
+            var input = new BinaryNode(
+                new UnaryValueNode(2),
+                new[]
+                {
+                    new BinaryNodeItem(
+                        BinaryOperatorType.Multiply,
+                        new UnaryExpressionNode(
+                            new BinaryNode(
+                                new UnaryValueNode(2),
+                                new[]
+                                {
+                                    new BinaryNodeItem(BinaryOperatorType.Subtract, new UnaryValueNode(3))
+                                }))),
+                });
+
+            var evaluator = new AstEvaluator();
+
+            // Act
+            var result = evaluator.Evaluate(input);
+
+            // Assert
+            Assert.Equal(-2, result);
+        }
+
+        [Fact]
+        public void Evaluate_ComplexTwoLevelsAst_ReturnsCorrectResult()
+        {
+            // Arrange
+            var first = new BinaryNode(
+                new UnaryValueNode(2),
+                new[]
+                {
+                    new BinaryNodeItem(BinaryOperatorType.Add, new UnaryValueNode(3)),
+                    new BinaryNodeItem(BinaryOperatorType.Multiply, new UnaryValueNode(3))
+                });
+            var second = new BinaryNode(
+                new UnaryValueNode(2),
+                new[]
+                {
+                    new BinaryNodeItem(BinaryOperatorType.Subtract, new UnaryValueNode(3))
+                });
+            var input = new BinaryNode(
+                new UnaryExpressionNode(first),
+                new[] { new BinaryNodeItem(BinaryOperatorType.Multiply, new UnaryExpressionNode(second)) });
+
+            var evaluator = new AstEvaluator();
+
+            // Act
+            var result = evaluator.Evaluate(input);
+
+            // Assert
+            Assert.Equal(-11, result);
+        }
+
+        [Fact]
+        public void Evaluate_SameOperatorLeftOrder_ReturnsCorrectResult()
+        {
+            // Arrange
+            var input = new BinaryNode(
+                new UnaryValueNode(2),
+                new[]
+                {
+                    new BinaryNodeItem(BinaryOperatorType.Multiply, new UnaryValueNode(3)),
+                    new BinaryNodeItem(BinaryOperatorType.Multiply, new UnaryValueNode(4))
+                });
+
+            var evaluator = new AstEvaluator();
+
+            // Act
+            var result = evaluator.Evaluate(input);
+
+            // Assert
+            Assert.Equal(24, result);
+        }
+
+        [Fact]
+        public void Evaluate_SameOperatorRightOrder_ReturnsCorrectResult()
+        {
+            // Arrange
+            var input = new BinaryNode(
+                new UnaryValueNode(2),
+                new[]
+                {
+                    new BinaryNodeItem(BinaryOperatorType.Power, new UnaryValueNode(3)),
+                    new BinaryNodeItem(BinaryOperatorType.Power, new UnaryValueNode(2))
+                });
+
+            var evaluator = new AstEvaluator();
+
+            // Act
+            var result = evaluator.Evaluate(input);
+
+            // Assert
+            Assert.Equal(512, result);
         }
 
         [Fact]
@@ -106,10 +164,10 @@ namespace NumericExpressionEvaluation.Core.Tests
                     new BinaryNodeItem(BinaryOperatorType.Power, new UnaryValueNode(2))
                 });
 
-            var parser = new AstEvaluator();
+            var evaluator = new AstEvaluator();
 
             // Act
-            var result = parser.Evaluate(input);
+            var result = evaluator.Evaluate(input);
 
             // Assert
             Assert.Equal(4, result);
@@ -128,10 +186,10 @@ namespace NumericExpressionEvaluation.Core.Tests
 
             var input = new BinaryNode(new UnaryPrefixNode(UnaryOperatorType.Minus, new UnaryExpressionNode(power)));
 
-            var parser = new AstEvaluator();
+            var evaluator = new AstEvaluator();
 
             // Act
-            var result = parser.Evaluate(input);
+            var result = evaluator.Evaluate(input);
 
             // Assert
             Assert.Equal(-Math.Pow(2, 2), result);
@@ -152,10 +210,10 @@ namespace NumericExpressionEvaluation.Core.Tests
                     new BinaryNodeItem(BinaryOperatorType.Power, new UnaryValueNode(3))
                 });
 
-            var parser = new AstEvaluator();
+            var evaluator = new AstEvaluator();
 
             // Act
-            var result = parser.Evaluate(input);
+            var result = evaluator.Evaluate(input);
 
             // Assert
             Assert.Equal(Math.Pow(1-2, 3), result);

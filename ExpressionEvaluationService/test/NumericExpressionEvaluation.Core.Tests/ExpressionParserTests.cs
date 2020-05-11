@@ -11,6 +11,7 @@ namespace NumericExpressionEvaluation.Core.Tests
         [InlineData("-2")]
         [InlineData("+2")]
         [InlineData("--2")]
+        [InlineData("-(-2)")]
         [InlineData("-2 * -(-2)")]
         [InlineData("22.2")]
         [InlineData("1 * (2 - 3)")]
@@ -69,6 +70,7 @@ namespace NumericExpressionEvaluation.Core.Tests
         }
 
         [Theory]
+        [InlineData("--")]
         [InlineData("1-")]
         [InlineData("*1")]
         [InlineData("1^-")]

@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
-using NumericExpressionEvaluation.Core.Nodes;
-using NumericExpressionEvaluation.Core.Nodes.Binary;
-using NumericExpressionEvaluation.Core.Nodes.Unary;
+using LogicalExpressionEvaluation.Core.Nodes;
+using LogicalExpressionEvaluation.Core.Nodes.Binary;
+using LogicalExpressionEvaluation.Core.Nodes.Unary;
 
-namespace NumericExpressionEvaluation.Core.Parsing
+namespace LogicalExpressionEvaluation.Core.Parsing
 {
     internal class ExpressionParser : IExpressionParser
     {
@@ -88,17 +90,17 @@ namespace NumericExpressionEvaluation.Core.Parsing
                 return true;
             }
 
-            if (TryGetUnaryPrefixWithPowerNode(ref innerInput, out var prefixWithPowerNode))
-            {
-                input = innerInput;
-                output = prefixWithPowerNode;
-                return true;
-            }
-
             if (TryGetUnaryPrefixNode(ref innerInput, out var prefixNode))
             {
                 input = innerInput;
                 output = prefixNode;
+                return true;
+            }
+
+            if (TryGetComplexUnaryValueNode(ref innerInput, out var complexValueNode))
+            {
+                input = innerInput;
+                output = complexValueNode;
                 return true;
             }
 
@@ -156,38 +158,14 @@ namespace NumericExpressionEvaluation.Core.Parsing
             return false;
         }
 
-        private bool TryGetUnaryPrefixWithPowerNode(ref string input, [NotNullWhen(true)] out UnaryPrefixNode? output)
-        {
-            if (input.Length > 0)
-            {
-                var op = OperatorsFormatter.CharToUnaryOperator(input[0]);
-                if (op != UnaryOperatorType.Unknown)
-                {
-                    var innerInput = input.Substring(1);
-                    if (TryGetBinaryNode(ref innerInput, out var innerBinaryNode, BinaryOperatorType.Power))
-                    {
-                        if (innerBinaryNode.Rights.Any())
-                        {
-                            input = innerInput;
-                            output = new UnaryPrefixNode(op, new UnaryExpressionNode(innerBinaryNode));
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            output = null;
-            return false;
-        }
-
         private bool TryGetUnaryPrefixNode(ref string input, [NotNullWhen(true)] out UnaryPrefixNode? output)
         {
-            if (input.Length > 0)
+            var innerInput = input;
+            if (TryParseUnaryValue(ref innerInput, out var value))
             {
-                var op = OperatorsFormatter.CharToUnaryOperator(input[0]);
+                var op = OperatorsFormatter.StringToUnaryOperator(value);
                 if (op != UnaryOperatorType.Unknown)
                 {
-                    var innerInput = input.Substring(1);
                     if (TryGetUnaryNode(ref innerInput, out var innerUnaryNode))
                     {
                         input = innerInput;
@@ -201,18 +179,54 @@ namespace NumericExpressionEvaluation.Core.Parsing
             return false;
         }
 
+        private bool TryGetComplexUnaryValueNode(ref string input, [NotNullWhen(true)] out UnaryValueNode? output)
+        {
+            if (input.StartsWith("\""))
+            {
+                var endIndex = input.Substring(1).IndexOf("\"", StringComparison.InvariantCulture);
+                if (endIndex >= 0)
+                {
+                    var value = input.Substring(0, endIndex + 2);
+                    output = new UnaryValueNode(value);
+                    input = input.Substring(endIndex + 2).TrimStart();
+                    return true;
+                }
+            }
+
+            output = null;
+            return false;
+        }
+
         private bool TryGetUnaryValueNode(ref string input, [NotNullWhen(true)] out UnaryValueNode? output)
         {
-            var match = Regex.Match(input, @"^([0-9\.]+)(%?)(.*)");
-            if (match.Success && double.TryParse(match.Groups[1].Value, out var inputValue))
+            var innerInput = input;
+            if (TryParseUnaryValue(ref innerInput, out var value)
+             && ValidateUnaryValue(value))  // validate that value is not same as operator
             {
-                // convert from percentage to double
-                var doubleValue = match.Groups[2].Value == "%"
-                    ? inputValue / 100
-                    : inputValue;
-                
-                output = new UnaryValueNode(doubleValue);
-                input = match.Groups[3].Value;
+                input = innerInput;
+                output = new UnaryValueNode(value);
+                return true;
+            }
+
+            output = null;
+            return false;
+        }
+
+        private bool TryParseUnaryValue(ref string input, [NotNullWhen(true)] out string? output)
+        {
+            var match = Regex.Match(input, @"^(\S+)\s(.*)");
+            if (match.Success)
+            {
+                output = match.Groups[1].Value;
+                input = match.Groups[2].Value;
+                return true;
+            }
+            
+            match = Regex.Match(input, @"^(\S+)$");
+            if (match.Success)
+            {
+                output = input;
+                input = string.Empty;
                 return true;
             }
 
@@ -222,12 +236,13 @@ namespace NumericExpressionEvaluation.Core.Parsing
 
         private bool TryGetBinaryOperatorType(ref string input, [NotNullWhen(true)] out BinaryOperatorType output)
         {
-            if (input.Length > 0)
+            var innerInput = input;
+            if (TryParseUnaryValue(ref innerInput, out var value))
             {
-                output = OperatorsFormatter.CharToBinaryOperator(input[0]);
+                output = OperatorsFormatter.StringToBinaryOperator(value);
                 if (output != BinaryOperatorType.Unknown)
                 {
-                    input = input.Substring(1);
+                    input = innerInput;
                     return true;
                 }
             }
@@ -238,7 +253,74 @@ namespace NumericExpressionEvaluation.Core.Parsing
 
         private string SanitizeInput(string input)
         {
-            return Regex.Replace(input, @"\s+", "");
+            input = input.Trim();
+            var parsed = new StringBuilder();
+
+            // remove multiple spaces
+            var withinParenthesis = false;
+            var previousValueIsSpace = true;
+            for (var i = 0; i < input.Length; ++i)
+            {
+                var value = input[i];
+
+                // skip escaped characters
+                if (value == '\\')
+                {
+                    ++i;
+                    continue;
+                }
+
+                if (value == '\"')
+                {
+                    parsed.Append(value);
+                    withinParenthesis = !withinParenthesis;
+                    previousValueIsSpace = false;
+                    continue;
+                }
+
+                if (withinParenthesis)
+                {
+                    parsed.Append(value);
+                    continue;
+                }
+
+                if (value == ' ')
+                {
+                    if (previousValueIsSpace)
+                    {
+                        continue;
+                    }
+
+                    previousValueIsSpace = true;
+                }
+                else
+                {
+                    if (value == '(' || value == ')')
+                    {
+                        if (!previousValueIsSpace && value == '(')
+                        {
+                            // add space before opening parenthesis
+                            // not(3) => not (3)
+                            parsed.Append(" ");
+                        }
+
+                        // consider parenthesis as spaces too, but do not skip them
+                        previousValueIsSpace = true;
+                    }
+                    else
+                    {
+                        previousValueIsSpace = false;
+                    }
+                }
+
+
+                parsed.Append(value);
+            }
+            
+            var output = parsed.ToString();
+
+            // also remove space before closing parenthesis
+            return output.Replace(" )", ")");
         }
 
         private void ValidateInput(string input)
@@ -249,6 +331,8 @@ namespace NumericExpressionEvaluation.Core.Parsing
 
         private void ValidateInputCharacters(string input)
         {
+            // TODO
+            return;
             // check if all characters are allowed in input string
             var match = Regex.Match(input, @"^[0-9\.+\-\*\/%\^\(\)]+$");
             if (!match.Success)
@@ -267,6 +351,19 @@ namespace NumericExpressionEvaluation.Core.Parsing
             {
                 throw new ExpressionParserException("Number of left and right parenthesis does not match!");
             }
+        }
+
+        private bool ValidateUnaryValue(string value)
+        {
+            foreach (UnaryOperatorType? type in Enum.GetValues(typeof(UnaryOperatorType)))
+            {
+                if (string.Equals(type?.ToDisplayString(), value, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
