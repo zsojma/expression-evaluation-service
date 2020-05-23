@@ -122,5 +122,31 @@ namespace NumericExpressionEvaluation.Core.Tests
         {
             return Regex.Replace(input, @"\s+", "");
         }
+
+
+        [Fact]
+        public void Text()
+        {
+            var input = new[] {
+                new Input { Id = 0, Value = 100 },
+                new Input { Id = 1, Value = 200 },
+                new Input { Id = 2, Value = 300 },
+                new Input { Id = 3, Value = 400 },
+            };
+
+            var value = "(1 - 2) / 0";
+            value = Regex.Replace(value, @"(\d)", @"#$1");
+
+            foreach (var item in input)
+            {
+                value = Regex.Replace(value, $"#{item.Id}", $"({item.Value})");
+            }
+        }
+
+        class Input
+        {
+            public int Id { get; set; }
+            public decimal Value { get; set; }
+        }
     }
 }

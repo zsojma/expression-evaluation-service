@@ -149,6 +149,12 @@ namespace LogicalExpressionEvaluation.Core.Evaluation
 
         private bool Evaluate(string input, string value)
         {
+            // remove parenthesis for comparison
+            if (value.StartsWith("\"") && value.EndsWith("\""))
+            {
+                value = value.Substring(1, value.Length - 2);
+            }
+
             return input.Contains(value, StringComparison.InvariantCulture);
         }
 

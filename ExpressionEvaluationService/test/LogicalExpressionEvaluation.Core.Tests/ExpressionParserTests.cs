@@ -79,6 +79,7 @@ namespace LogicalExpressionEvaluation.Core.Tests
         [Theory]
         [InlineData("\"or\" and \"and\"")]
         [InlineData("not \"not\"")]
+        [InlineData("\"(or\" or \"and)\"")]
         public void Parse_CorrectInputValuesAsOperators_ReturnsCorrectData(string input)
         {
             // Arrange
@@ -98,6 +99,8 @@ namespace LogicalExpressionEvaluation.Core.Tests
         [InlineData("(1 + a)")]
         [InlineData("1 not")]
         [InlineData("and 1")]
+        [InlineData("or or and")]
+        [InlineData("(or or and)")]
         public void Parse_InvalidInput_ThrowException(string input)
         {
             // Arrange

@@ -201,7 +201,7 @@ namespace LogicalExpressionEvaluation.Core.Parsing
         {
             var innerInput = input;
             if (TryParseUnaryValue(ref innerInput, out var value)
-             && ValidateUnaryValue(value))  // validate that value is not same as operator
+             && ValidateValueIsNotOperator(value))
             {
                 input = innerInput;
                 output = new UnaryValueNode(value);
@@ -214,7 +214,7 @@ namespace LogicalExpressionEvaluation.Core.Parsing
 
         private bool TryParseUnaryValue(ref string input, [NotNullWhen(true)] out string? output)
         {
-            var match = Regex.Match(input, @"^(\S+)\s(.*)");
+            var match = Regex.Match(input, @"^([^\s\(\)]+)\s(.*)");
             if (match.Success)
             {
                 output = match.Groups[1].Value;
@@ -222,7 +222,7 @@ namespace LogicalExpressionEvaluation.Core.Parsing
                 return true;
             }
             
-            match = Regex.Match(input, @"^(\S+)$");
+            match = Regex.Match(input, @"^([^\s\(\)]+)$");
             if (match.Success)
             {
                 output = input;
@@ -325,21 +325,7 @@ namespace LogicalExpressionEvaluation.Core.Parsing
 
         private void ValidateInput(string input)
         {
-            ValidateInputCharacters(input);
             ValidateInputParenthesis(input);
-        }
-
-        private void ValidateInputCharacters(string input)
-        {
-            // TODO
-            return;
-            // check if all characters are allowed in input string
-            var match = Regex.Match(input, @"^[0-9\.+\-\*\/%\^\(\)]+$");
-            if (!match.Success)
-            {
-                var invalidStrings = Regex.Matches(input, @"[^0-9\.+\-\*\/%\^\(\)]+").Select(x => $"'{x.Value}'");
-                throw new ExpressionParserException("Input contains invalid strings: " + string.Join(", ", invalidStrings));
-            }
         }
 
         private void ValidateInputParenthesis(string input)
@@ -353,7 +339,26 @@ namespace LogicalExpressionEvaluation.Core.Parsing
             }
         }
 
-        private bool ValidateUnaryValue(string value)
+        private bool ValidateValueIsNotOperator(string value)
+        {
+            return ValidateValueIsNotUnaryOperator(value)
+                && ValidateValueIsNotBinaryOperator(value);
+        }
+
+        private bool ValidateValueIsNotBinaryOperator(string value)
+        {
+            foreach (BinaryOperatorType? type in Enum.GetValues(typeof(BinaryOperatorType)))
+            {
+                if (string.Equals(type?.ToDisplayString(), value, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private bool ValidateValueIsNotUnaryOperator(string value)
         {
             foreach (UnaryOperatorType? type in Enum.GetValues(typeof(UnaryOperatorType)))
             {
